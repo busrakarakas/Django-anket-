@@ -1,0 +1,31 @@
+{% extends "errors/base_error.html" %}
+
+{% block error_title %}Sunucu Hatası{% endblock %}
+{% block code_gradient %}linear-gradient(135deg, #ef4444, #f97316){% endblock %}
+{% block divider_color %}linear-gradient(90deg, #ef4444, #f97316){% endblock %}
+{% block badge_bg %}rgba(239,68,68,0.2){% endblock %}
+{% block badge_border %}rgba(239,68,68,0.4){% endblock %}
+{% block badge_color %}#fca5a5{% endblock %}
+
+{% block extra_style %}
+<style>
+    .error-code { background: linear-gradient(135deg, #ef4444, #f97316) !important; -webkit-background-clip: text !important; }
+</style>
+{% endblock %}
+
+{% block error_icon %}🔥{% endblock %}
+{% block error_badge %}500 SUNUCU HATASI{% endblock %}
+{% block error_code %}500{% endblock %}
+{% block error_heading %}Sunucuda Bir Hata Oluştu!{% endblock %}
+{% block error_message %}
+    Beklenmeyen bir sunucu hatası meydana geldi.<br>
+    Ekibimiz bilgilendirildi, lütfen kısa bir süre sonra tekrar deneyin.
+{% endblock %}
+{% block error_actions %}
+<a href="/" class="btn-glass btn-glass-primary">
+    <i class="bi bi-house"></i> Ana Sayfaya Dön
+</a>
+<a href="javascript:location.reload()" class="btn-glass btn-glass-outline">
+    <i class="bi bi-arrow-clockwise"></i> Tekrar Dene
+</a>
+{% endblock %}

@@ -1,0 +1,106 @@
+{% extends "surveys/base.html" %}
+{% block title %}{{ survey.title }}{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+
+      <!-- Header -->
+      <div class="vp-detail-head mb-4">
+        <div class="d-flex align-items-center gap-3 mb-2">
+          <span style="font-size:3rem">{{ survey.thumbnail }}</span>
+          <div>
+            <div class="mb-1">
+              {% if survey.survey_type == 'hazir' %}
+              <span class="badge bg-primary rounded-pill">📋 Hazır Anket</span>
+              {% else %}
+              <span class="badge bg-warning text-dark rounded-pill">✏️ Özel Anket</span>
+              {% endif %}
+              {% if survey.category %}<span class="badge bg-secondary rounded-pill ms-1">{{ survey.category }}</span>{% endif %}
+            </div>
+            <h1 class="h3 fw-bold mb-0">{{ survey.title }}</h1>
+          </div>
+        </div>
+        {% if survey.description %}<p class="text-muted mb-0">{{ survey.description }}</p>{% endif %}
+        <div class="vp-meta-bar">
+          <span><i class="bi bi-question-circle text-primary"></i> {{ survey.question_count }} soru</span>
+          <span><i class="bi bi-graph-up text-success"></i> {{ total_votes }} oy</span>
+          <span><i class="bi bi-calendar3 text-warning"></i> {{ survey.created_at|date:"d.m.Y" }}</span>
+          {% if not is_active %}<span class="badge bg-danger">🔒 Kapalı</span>{% endif %}
+          {% if all_voted %}<span class="badge bg-success">✅ Tamamlandı</span>{% endif %}
+        </div>
+      </div>
+
+      <!-- Tamamlandı Banner -->
+      {% if all_voted %}
+      <div class="alert alert-success rounded-3 d-flex align-items-center gap-2 mb-4">
+        <span style="font-size:2rem">🎉</span>
+        <div>
+          <strong>Anketi tamamladınız!</strong><br>
+          <a href="{% url 'surveys:results' survey.pk %}" class="alert-link">Sonuçları görmek için tıklayın →</a>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Sorular -->
+      {% for question in survey.questions.all %}
+      <div class="vp-q-card mb-4 {% if question.pk in voted_questions %}vp-q-done{% endif %}">
+        <div class="vp-q-header">
+          <span class="vp-q-num">S{{ forloop.counter }}</span>
+          <h5 class="vp-q-text mb-0">{{ question.text }}</h5>
+        </div>
+
+        {% if question.pk in voted_questions %}
+        <div class="vp-voted-section">
+          <div class="vp-voted-notice"><i class="bi bi-check-circle-fill text-success me-2"></i>Oyunuz alındı</div>
+          {% for choice in question.choices.all %}
+          <div class="mb-2">
+            <div class="d-flex justify-content-between mb-1">
+              <span>{{ choice.icon }} {{ choice.text }}</span>
+              <strong class="text-primary">%{{ choice.vote_percentage }}</strong>
+            </div>
+            <div class="vp-bar-track">
+              <div class="vp-bar-fill" style="width:{{ choice.vote_percentage }}%"></div>
+            </div>
+            <small class="text-muted">{{ choice.votes }} oy</small>
+          </div>
+          {% endfor %}
+        </div>
+
+        {% elif is_active %}
+        <form method="POST" action="{% url 'surveys:vote' survey.pk question.pk %}" class="vp-vote-form">
+          {% csrf_token %}
+          <div class="vp-choices">
+            {% for choice in question.choices.all %}
+            <label class="vp-choice">
+              <input type="radio" name="choice" value="{{ choice.pk }}" class="vp-choice-radio" required>
+              <div class="vp-choice-box">
+                <span class="vp-choice-icon">{{ choice.icon|default:"○" }}</span>
+                <span class="vp-choice-text">{{ choice.text }}</span>
+                <span class="vp-choice-check"><i class="bi bi-check-circle-fill"></i></span>
+              </div>
+            </label>
+            {% endfor %}
+          </div>
+          <button type="submit" class="btn btn-primary mt-3 rounded-pill px-4">
+            <i class="bi bi-send me-2"></i>Oyumu Gönder
+          </button>
+        </form>
+        {% else %}
+        <div class="alert alert-secondary rounded-3 mt-3 mb-0">
+          <i class="bi bi-lock me-2"></i>Bu anket kapalıdır.
+        </div>
+        {% endif %}
+      </div>
+      {% empty %}
+      <div class="alert alert-info rounded-3"><i class="bi bi-info-circle me-2"></i>Henüz soru eklenmemiş.</div>
+      {% endfor %}
+
+      <div class="d-flex justify-content-between mt-4">
+        <a href="{% url 'surveys:survey_list' %}" class="btn btn-outline-secondary rounded-pill"><i class="bi bi-arrow-left me-1"></i>Geri</a>
+        <a href="{% url 'surveys:results' survey.pk %}" class="btn btn-outline-primary rounded-pill"><i class="bi bi-bar-chart me-1"></i>Sonuçlar</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

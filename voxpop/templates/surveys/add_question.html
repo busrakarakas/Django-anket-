@@ -1,0 +1,142 @@
+{% extends "surveys/base.html" %}
+{% block title %}Soru Ekle - {{ survey.title }}{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <div class="row g-4">
+    <!-- Sol: Form -->
+    <div class="col-lg-7">
+      <div class="vp-form-card">
+        <div class="vp-form-header d-flex align-items-center gap-3">
+          <span style="font-size:2.5rem">{{ survey.thumbnail }}</span>
+          <div>
+            <h4 class="fw-bold mb-0">{{ survey.title }}</h4>
+            <span class="badge {% if survey.status == 'active' %}bg-success{% else %}bg-secondary{% endif %}">
+              {% if survey.status == 'active' %}✅ Yayında{% else %}📝 Taslak{% endif %}
+            </span>
+          </div>
+        </div>
+
+        <!-- Soru Ekle -->
+        <form method="POST" class="p-4 border-bottom">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="add_question">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">❓ Soru Metni *</label>
+            <input type="text" name="question_text" class="form-control form-control-lg"
+                   placeholder="Sorunuzu buraya yazın..." required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Seçenekler (en az 2) *</label>
+            <div id="choices-container">
+              <div class="input-group mb-2">
+                <input type="text" class="form-control choice-icon" name="icon_1" placeholder="🔵" style="max-width:60px;text-align:center;font-size:1.2rem">
+                <input type="text" class="form-control" name="choice_1" placeholder="Seçenek 1...">
+              </div>
+              <div class="input-group mb-2">
+                <input type="text" class="form-control choice-icon" name="icon_2" placeholder="🟢" style="max-width:60px;text-align:center;font-size:1.2rem">
+                <input type="text" class="form-control" name="choice_2" placeholder="Seçenek 2...">
+              </div>
+              <div class="input-group mb-2">
+                <input type="text" class="form-control choice-icon" name="icon_3" placeholder="🔴" style="max-width:60px;text-align:center;font-size:1.2rem">
+                <input type="text" class="form-control" name="choice_3" placeholder="Seçenek 3...">
+              </div>
+              <div class="input-group mb-2">
+                <input type="text" class="form-control choice-icon" name="icon_4" placeholder="🟡" style="max-width:60px;text-align:center;font-size:1.2rem">
+                <input type="text" class="form-control" name="choice_4" placeholder="Seçenek 4...">
+              </div>
+              <div class="input-group mb-2">
+                <input type="text" class="form-control choice-icon" name="icon_5" placeholder="🟣" style="max-width:60px;text-align:center;font-size:1.2rem">
+                <input type="text" class="form-control" name="choice_5" placeholder="Seçenek 5...">
+              </div>
+              <div class="input-group mb-2">
+                <input type="text" class="form-control choice-icon" name="icon_6" placeholder="⚪" style="max-width:60px;text-align:center;font-size:1.2rem">
+                <input type="text" class="form-control" name="choice_6" placeholder="Seçenek 6...">
+              </div>
+            </div>
+            <small class="text-muted"><i class="bi bi-info-circle"></i> Boş seçenekler atlanır. İkon isteğe bağlı.</small>
+          </div>
+          <!-- Hızlı İkon -->
+          <div class="mb-3">
+            <div class="small text-muted fw-bold mb-2">Hızlı İkon Ekle (seçenek alanını seçin, sonra tıklayın):</div>
+            <div class="d-flex flex-wrap gap-1">
+              {% for icon in quick_icons %}
+              <button type="button" class="btn btn-sm btn-light border icon-pick" data-icon="{{ icon }}">{{ icon }}</button>
+              {% endfor %}
+            </div>
+          </div>
+          <button type="submit" class="btn btn-success rounded-pill px-4">
+            <i class="bi bi-plus-circle me-2"></i>Soruyu Ekle
+          </button>
+        </form>
+
+        <!-- Yayınla / Sil -->
+        <div class="p-4 d-flex gap-3">
+          <form method="POST" class="flex-grow-1">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="publish">
+            <button type="submit" class="btn btn-primary w-100 rounded-pill"
+                    {% if questions.count == 0 %}disabled title="Önce soru ekleyin"{% endif %}>
+              <i class="bi bi-rocket me-2"></i>
+              {% if questions.count == 0 %}Önce soru ekleyin{% else %}🚀 Anketi Yayınla{% endif %}
+            </button>
+          </form>
+          <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="delete_survey">
+            <button type="submit" class="btn btn-outline-danger rounded-pill"
+                    onclick="return confirm('Anket silinsin mi?')">
+              <i class="bi bi-trash"></i> Sil
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sağ: Mevcut Sorular -->
+    <div class="col-lg-5">
+      <h5 class="fw-bold mb-3">📋 Eklenen Sorular <span class="badge bg-primary">{{ questions.count }}</span></h5>
+      {% for q in questions %}
+      <div class="vp-q-preview mb-3">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <div class="fw-semibold small">{{ forloop.counter }}. {{ q.text }}</div>
+          <form method="POST" class="ms-2">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="delete_question">
+            <input type="hidden" name="question_id" value="{{ q.pk }}">
+            <button type="submit" class="btn btn-sm btn-outline-danger"
+                    onclick="return confirm('Soru silinsin mi?')" title="Sil">
+              <i class="bi bi-trash"></i>
+            </button>
+          </form>
+        </div>
+        <div class="d-flex flex-wrap gap-1">
+          {% for c in q.choices.all %}
+          <span class="badge bg-light text-dark border">{{ c.icon }} {{ c.text }}</span>
+          {% endfor %}
+        </div>
+      </div>
+      {% empty %}
+      <div class="vp-empty"><div>📝</div><p class="text-muted small">Henüz soru eklenmedi.</p></div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+let activeIconInput = null;
+document.querySelectorAll('.choice-icon').forEach(inp => {
+  inp.addEventListener('focus', () => { activeIconInput = inp; });
+});
+document.querySelectorAll('.icon-pick').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (activeIconInput) {
+      activeIconInput.value = btn.dataset.icon;
+      activeIconInput.focus();
+    } else {
+      alert('Önce bir ikon alanına tıklayın, sonra emoji seçin.');
+    }
+  });
+});
+</script>
+{% endblock %}

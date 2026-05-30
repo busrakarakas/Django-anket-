@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block error_title %}Hata{% endblock %} | AnketApp</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --success: #10b981;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            overflow: hidden;
+        }
+
+        /* Arka plan animasyonlu parçacıklar */
+        .particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.15;
+            animation: float-particle linear infinite;
+        }
+
+        @keyframes float-particle {
+            0%   { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10%  { opacity: 0.15; }
+            90%  { opacity: 0.15; }
+            100% { transform: translateY(-100px) rotate(720deg); opacity: 0; }
+        }
+
+        /* Ana kart */
+        .error-card {
+            position: relative;
+            z-index: 1;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 28px;
+            padding: 3rem 3.5rem;
+            text-align: center;
+            max-width: 520px;
+            width: 90%;
+            box-shadow: 0 32px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+            animation: card-in 0.6s cubic-bezier(.34,1.56,.64,1);
+        }
+
+        @keyframes card-in {
+            from { opacity: 0; transform: translateY(40px) scale(0.95); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* Hata kodu büyük sayı */
+        .error-code {
+            font-size: clamp(5rem, 18vw, 9rem);
+            font-weight: 900;
+            line-height: 1;
+            background: {% block code_gradient %}linear-gradient(135deg, #6366f1, #a78bfa){% endblock %};
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -4px;
+            margin-bottom: 0.5rem;
+            animation: pulse-code 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-code {
+            0%, 100% { filter: brightness(1); }
+            50%       { filter: brightness(1.2); }
+        }
+
+        /* İkon */
+        .error-icon {
+            font-size: 3.5rem;
+            display: block;
+            margin-bottom: 1rem;
+            animation: bounce-icon 1.5s ease-in-out infinite;
+        }
+
+        @keyframes bounce-icon {
+            0%, 100% { transform: translateY(0); }
+            50%       { transform: translateY(-10px); }
+        }
+
+        .error-title {
+            color: #fff;
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        .error-desc {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.95rem;
+            line-height: 1.7;
+            margin-bottom: 2rem;
+        }
+
+        /* Butonlar */
+        .error-actions { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
+
+        .btn-glass {
+            padding: 0.65rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: all 0.25s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-glass-primary {
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            color: #fff;
+            border: none;
+            box-shadow: 0 4px 20px rgba(99,102,241,0.4);
+        }
+        .btn-glass-primary:hover {
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(99,102,241,0.6);
+        }
+
+        .btn-glass-outline {
+            background: rgba(255,255,255,0.08);
+            color: rgba(255,255,255,0.85);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .btn-glass-outline:hover {
+            background: rgba(255,255,255,0.15);
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        /* Ayırıcı çizgi */
+        .error-divider {
+            width: 60px;
+            height: 3px;
+            border-radius: 10px;
+            background: {% block divider_color %}linear-gradient(90deg, #6366f1, #a78bfa){% endblock %};
+            margin: 1rem auto 1.5rem;
+        }
+
+        /* Logo */
+        .error-logo {
+            position: fixed;
+            top: 1.5rem;
+            left: 2rem;
+            z-index: 10;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: rgba(255,255,255,0.8);
+            font-weight: 800;
+            font-size: 1.2rem;
+        }
+        .error-logo:hover { color: #fff; }
+        .error-logo span { color: #f59e0b; }
+
+        /* Hata kodu etiketi */
+        .error-badge {
+            display: inline-block;
+            background: {% block badge_bg %}rgba(99,102,241,0.2){% endblock %};
+            border: 1px solid {% block badge_border %}rgba(99,102,241,0.4){% endblock %};
+            color: {% block badge_color %}#a78bfa{% endblock %};
+            padding: 4px 14px;
+            border-radius: 50px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+    </style>
+    {% block extra_style %}{% endblock %}
+</head>
+<body>
+
+<!-- Logo -->
+<a href="/" class="error-logo">🗳️ Anket<span>App</span></a>
+
+<!-- Parçacıklar -->
+<div class="particles" id="particles"></div>
+
+<!-- Hata Kartı -->
+<div class="error-card">
+    <span class="error-icon">{% block error_icon %}⚠️{% endblock %}</span>
+    <div class="error-badge">{% block error_badge %}HATA{% endblock %}</div>
+    <div class="error-code">{% block error_code %}???{% endblock %}</div>
+    <div class="error-divider"></div>
+    <h1 class="error-title">{% block error_heading %}Bir şeyler ters gitti{% endblock %}</h1>
+    <p class="error-desc">{% block error_message %}Beklenmeyen bir hata oluştu.{% endblock %}</p>
+    <div class="error-actions">
+        {% block error_actions %}
+        <a href="/" class="btn-glass btn-glass-primary">
+            <i class="bi bi-house"></i> Ana Sayfaya Dön
+        </a>
+        {% endblock %}
+    </div>
+</div>
+
+<script>
+// Animasyonlu arka plan parçacıkları oluştur
+const container = document.getElementById('particles');
+const colors = ['#6366f1','#a78bfa','#f59e0b','#10b981','#ec4899'];
+for (let i = 0; i < 18; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const size = Math.random() * 80 + 20;
+    p.style.cssText = `
+        width: ${size}px;
+        height: ${size}px;
+        left: ${Math.random() * 100}%;
+        background: ${colors[Math.floor(Math.random() * colors.length)]};
+        animation-duration: ${Math.random() * 15 + 10}s;
+        animation-delay: ${Math.random() * 10}s;
+    `;
+    container.appendChild(p);
+}
+</script>
+</body>
+</html>

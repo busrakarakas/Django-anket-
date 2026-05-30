@@ -1,0 +1,25 @@
+{% extends "errors/base_error.html" %}
+
+{% block error_title %}Geçersiz İstek{% endblock %}
+{% block code_gradient %}linear-gradient(135deg, #8b5cf6, #6366f1){% endblock %}
+{% block divider_color %}linear-gradient(90deg, #8b5cf6, #6366f1){% endblock %}
+{% block badge_bg %}rgba(139,92,246,0.2){% endblock %}
+{% block badge_border %}rgba(139,92,246,0.4){% endblock %}
+{% block badge_color %}#c4b5fd{% endblock %}
+
+{% block error_icon %}🤔{% endblock %}
+{% block error_badge %}400 GEÇERSİZ İSTEK{% endblock %}
+{% block error_code %}400{% endblock %}
+{% block error_heading %}Geçersiz İstek!{% endblock %}
+{% block error_message %}
+    Sunucu bu isteği anlayamadı.<br>
+    Lütfen tekrar deneyin veya ana sayfaya dönün.
+{% endblock %}
+{% block error_actions %}
+<a href="/" class="btn-glass btn-glass-primary">
+    <i class="bi bi-house"></i> Ana Sayfaya Dön
+</a>
+<a href="javascript:history.back()" class="btn-glass btn-glass-outline">
+    <i class="bi bi-arrow-left"></i> Geri Git
+</a>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends "surveys/base.html" %}
+{% block title %}Sonuçlar - {{ survey.title }}{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="text-center mb-5">
+        <div style="font-size:4rem">{{ survey.thumbnail }}</div>
+        <h2 class="fw-bold mt-2">{{ survey.title }}</h2>
+        <p class="text-muted">Anket Sonuçları</p>
+        <div class="d-flex justify-content-center gap-4">
+          <div><div class="vp-res-num">{{ survey_total }}</div><div class="vp-res-lbl">Toplam Oy</div></div>
+          <div><div class="vp-res-num">{{ questions_data|length }}</div><div class="vp-res-lbl">Soru</div></div>
+        </div>
+      </div>
+
+      {% for q in questions_data %}
+      <div class="vp-res-card mb-4">
+        <div class="vp-res-head">
+          <span class="vp-res-qnum">S{{ forloop.counter }}</span>
+          <h5 class="mb-0">{{ q.question.text }}</h5>
+        </div>
+        <div class="p-4">
+          {% if q.total == 0 %}
+          <p class="text-muted text-center"><i class="bi bi-inbox"></i> Henüz oy yok</p>
+          {% else %}
+          <div class="mb-2"><small class="text-muted">{{ q.total }} katılımcı</small>
+            {% if q.winner %}<span class="badge bg-warning text-dark ms-2">🏆 {{ q.winner }}</span>{% endif %}
+          </div>
+          {% for cd in q.choices %}
+          <div class="mb-3">
+            <div class="d-flex justify-content-between mb-1">
+              <span class="fw-medium">{{ cd.choice.icon }} {{ cd.choice.text }}
+                {% if q.winner and cd.choice == q.winner %} 🏆{% endif %}
+              </span>
+              <span><strong class="text-primary">%{{ cd.percentage }}</strong> <small class="text-muted">({{ cd.choice.votes }})</small></span>
+            </div>
+            <div class="vp-res-track">
+              <div class="vp-res-fill {% if q.winner and cd.choice == q.winner %}vp-res-winner{% endif %}"
+                   style="width:0" data-w="{{ cd.percentage }}%"></div>
+            </div>
+          </div>
+          {% endfor %}
+          {% endif %}
+        </div>
+      </div>
+      {% empty %}
+      <p class="text-center text-muted">Henüz soru yok.</p>
+      {% endfor %}
+
+      <div class="d-flex justify-content-between mt-4">
+        <a href="{% url 'surveys:survey_detail' survey.pk %}" class="btn btn-primary rounded-pill"><i class="bi bi-hand-index me-1"></i>Ankete Katıl</a>
+        <a href="{% url 'surveys:survey_list' %}" class="btn btn-outline-secondary rounded-pill"><i class="bi bi-list-ul me-1"></i>Anketler</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    document.querySelectorAll('.vp-res-fill').forEach(el => {
+      el.style.transition = 'width 1.2s cubic-bezier(.4,0,.2,1)';
+      el.style.width = el.dataset.w;
+    });
+  }, 150);
+});
+</script>
+{% endblock %}

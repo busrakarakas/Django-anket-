@@ -1,0 +1,25 @@
+{% extends "errors/base_error.html" %}
+
+{% block error_title %}Erişim Reddedildi{% endblock %}
+{% block code_gradient %}linear-gradient(135deg, #f59e0b, #ef4444){% endblock %}
+{% block divider_color %}linear-gradient(90deg, #f59e0b, #ef4444){% endblock %}
+{% block badge_bg %}rgba(245,158,11,0.2){% endblock %}
+{% block badge_border %}rgba(245,158,11,0.4){% endblock %}
+{% block badge_color %}#fcd34d{% endblock %}
+
+{% block error_icon %}🔒{% endblock %}
+{% block error_badge %}403 ERİŞİM REDDEDİLDİ{% endblock %}
+{% block error_code %}403{% endblock %}
+{% block error_heading %}Bu Alana Giremezsiniz!{% endblock %}
+{% block error_message %}
+    Bu sayfayı görüntüleme yetkiniz bulunmuyor.<br>
+    Giriş yaptıktan sonra tekrar deneyin.
+{% endblock %}
+{% block error_actions %}
+<a href="/giris/" class="btn-glass btn-glass-primary">
+    <i class="bi bi-box-arrow-in-right"></i> Giriş Yap
+</a>
+<a href="/" class="btn-glass btn-glass-outline">
+    <i class="bi bi-house"></i> Ana Sayfa
+</a>
+{% endblock %}

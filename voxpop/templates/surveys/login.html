@@ -1,0 +1,37 @@
+{% extends "surveys/base.html" %}
+{% block title %}Giriş Yap | AnketApp{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-5">
+      <div class="vp-form-card">
+        <div class="vp-form-header text-center">
+          <div style="font-size:3rem">🗳️</div>
+          <h3 class="fw-bold mt-2">AnketApp'a Giriş</h3>
+          <p class="text-muted small">Anket oluşturmak için giriş yapın</p>
+        </div>
+        <form method="POST" class="p-4">
+          {% csrf_token %}
+          {% if form.errors %}
+          <div class="alert alert-danger rounded-3">❌ Kullanıcı adı veya şifre hatalı.</div>
+          {% endif %}
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Kullanıcı Adı</label>
+            <input type="text" name="username" class="form-control form-control-lg" autofocus required>
+          </div>
+          <div class="mb-4">
+            <label class="form-label fw-semibold">Şifre</label>
+            <input type="password" name="password" class="form-control form-control-lg" required>
+          </div>
+          <button type="submit" class="btn btn-primary w-100 btn-lg rounded-pill">
+            <i class="bi bi-box-arrow-in-right me-2"></i>Giriş Yap
+          </button>
+          <p class="text-center text-muted small mt-3">
+            Hesabınız yoksa terminalde: <code>python manage.py createsuperuser</code>
+          </p>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

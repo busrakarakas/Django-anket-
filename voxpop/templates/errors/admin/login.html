@@ -1,0 +1,220 @@
+{% load i18n static %}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giriş | AnketApp Yönetim</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #1e1b4b 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            overflow: hidden;
+        }
+
+        /* Arka plan ızgara */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(99,102,241,.08) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(99,102,241,.08) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+        }
+
+        /* Parlayan top */
+        .glow-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            pointer-events: none;
+            animation: orb-move 8s ease-in-out infinite;
+        }
+        .orb-1 { width: 400px; height: 400px; background: rgba(99,102,241,.25); top: -100px; right: -100px; animation-delay: 0s; }
+        .orb-2 { width: 300px; height: 300px; background: rgba(245,158,11,.15); bottom: -80px; left: -80px; animation-delay: 3s; }
+        @keyframes orb-move { 0%,100%{transform:translate(0,0)} 50%{transform:translate(30px,-20px)} }
+
+        /* Giriş kartı */
+        .login-card {
+            position: relative;
+            z-index: 1;
+            background: rgba(255,255,255,0.06);
+            backdrop-filter: blur(24px);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 24px;
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 32px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+            animation: card-in .6s cubic-bezier(.34,1.56,.64,1);
+        }
+        @keyframes card-in {
+            from { opacity: 0; transform: translateY(30px) scale(0.96); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .login-logo { text-align: center; margin-bottom: 1.75rem; }
+        .login-logo .emoji { font-size: 3.5rem; display: block; margin-bottom: .5rem; animation: bounce 2s ease-in-out infinite; }
+        @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+        .login-logo h1 { color: #fff; font-size: 1.7rem; font-weight: 900; letter-spacing: -0.5px; }
+        .login-logo h1 span { color: #f59e0b; }
+        .login-logo p { color: rgba(255,255,255,.5); font-size: .82rem; margin-top: .25rem; }
+
+        /* Hata mesajı */
+        .login-error {
+            background: rgba(239,68,68,.15);
+            border: 1px solid rgba(239,68,68,.35);
+            color: #fca5a5;
+            border-radius: 10px;
+            padding: .75rem 1rem;
+            font-size: .85rem;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Form */
+        .form-group { margin-bottom: 1.1rem; }
+        .form-group label {
+            display: block;
+            color: rgba(255,255,255,.7);
+            font-size: .82rem;
+            font-weight: 600;
+            margin-bottom: .4rem;
+            letter-spacing: .3px;
+        }
+        .form-group input {
+            width: 100%;
+            background: rgba(255,255,255,.07);
+            border: 1.5px solid rgba(255,255,255,.15);
+            border-radius: 10px;
+            padding: .7rem 1rem;
+            color: #fff;
+            font-size: .92rem;
+            transition: all .2s;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #6366f1;
+            background: rgba(99,102,241,.1);
+            box-shadow: 0 0 0 4px rgba(99,102,241,.15);
+        }
+        .form-group input::placeholder { color: rgba(255,255,255,.3); }
+
+        /* Submit butonu */
+        .btn-login {
+            width: 100%;
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            padding: .85rem;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all .25s;
+            box-shadow: 0 6px 20px rgba(99,102,241,.4);
+            margin-top: .5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: .5rem;
+        }
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 28px rgba(99,102,241,.5);
+        }
+        .btn-login:active { transform: translateY(0); }
+
+        /* Alt bağlantı */
+        .login-footer {
+            text-align: center;
+            margin-top: 1.25rem;
+            color: rgba(255,255,255,.4);
+            font-size: .78rem;
+        }
+        .login-footer a { color: rgba(255,255,255,.6); text-decoration: none; }
+        .login-footer a:hover { color: #f59e0b; }
+
+        /* Versiyon badge */
+        .version-badge {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background: rgba(255,255,255,.06);
+            border: 1px solid rgba(255,255,255,.1);
+            color: rgba(255,255,255,.4);
+            border-radius: 20px;
+            padding: .35rem .85rem;
+            font-size: .72rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+
+    <div class="login-card">
+        <div class="login-logo">
+            <span class="emoji">🗳️</span>
+            <h1>Anket<span>App</span></h1>
+            <p>Yönetim Paneline Giriş</p>
+        </div>
+
+        {% if form.errors %}
+        <div class="login-error">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            Kullanıcı adı veya şifre hatalı. Lütfen tekrar deneyin.
+        </div>
+        {% endif %}
+
+        {% if error_message %}
+        <div class="login-error">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            {{ error_message }}
+        </div>
+        {% endif %}
+
+        <form method="post" action="{{ app_path }}">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ next }}">
+
+            <div class="form-group">
+                <label for="id_username"><i class="bi bi-person-fill"></i> Kullanıcı Adı</label>
+                <input type="text" id="id_username" name="username"
+                       autocomplete="username" autofocus required
+                       placeholder="Kullanıcı adınızı girin...">
+            </div>
+
+            <div class="form-group">
+                <label for="id_password"><i class="bi bi-lock-fill"></i> Şifre</label>
+                <input type="password" id="id_password" name="password"
+                       autocomplete="current-password" required
+                       placeholder="••••••••">
+            </div>
+
+            <button type="submit" class="btn-login">
+                <i class="bi bi-box-arrow-in-right"></i>
+                Giriş Yap
+            </button>
+        </form>
+
+        <div class="login-footer">
+            <a href="/">← AnketApp Ana Sayfasına Dön</a>
+        </div>
+    </div>
+
+    <div class="version-badge">AnketApp v2.0</div>
+</body>
+</html>

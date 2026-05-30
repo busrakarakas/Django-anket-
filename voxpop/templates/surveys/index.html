@@ -1,0 +1,129 @@
+{% extends "surveys/base.html" %}
+{% block title %}Ana Sayfa | AnketApp{% endblock %}
+{% block content %}
+
+<!-- Hero -->
+<section class="vp-hero py-5">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6">
+        <span class="badge bg-warning text-dark rounded-pill px-3 py-2 mb-3">🎓 Bilişim Sistemleri Anket Platformu</span>
+        <h1 class="vp-hero-title mb-3">Oy Ver,<br><span class="text-gradient">Sonuçları</span> Gör!</h1>
+        <p class="lead text-muted mb-4">Hazır Bilişim anketlerine katılın ya da kendi anketinizi oluşturup arkadaşlarınızla paylaşın.</p>
+        <div class="d-flex gap-3 flex-wrap">
+          <a href="{% url 'surveys:survey_list' %}?tip=hazir" class="btn btn-primary btn-lg rounded-pill px-4">
+            <i class="bi bi-clipboard-check me-2"></i>Hazır Anketler
+          </a>
+          {% if user.is_authenticated %}
+          <a href="{% url 'surveys:create_survey' %}" class="btn btn-warning btn-lg rounded-pill px-4">
+            <i class="bi bi-plus-circle me-2"></i>Anket Oluştur
+          </a>
+          {% else %}
+          <a href="{% url 'login' %}" class="btn btn-outline-primary btn-lg rounded-pill px-4">
+            <i class="bi bi-box-arrow-in-right me-2"></i>Giriş Yap
+          </a>
+          {% endif %}
+        </div>
+        <!-- Stats -->
+        <div class="vp-stats mt-4 d-flex gap-4 pt-4">
+          <div><div class="vp-stat-num" data-target="{{ total_surveys }}">{{ total_surveys }}</div><div class="vp-stat-lbl">Aktif Anket</div></div>
+          <div class="vp-stat-divider"></div>
+          <div><div class="vp-stat-num" data-target="{{ total_votes }}">{{ total_votes }}</div><div class="vp-stat-lbl">Toplam Oy</div></div>
+          <div class="vp-stat-divider"></div>
+          <div><div class="vp-stat-num" data-target="{{ total_users }}">{{ total_users }}</div><div class="vp-stat-lbl">Oluşturan</div></div>
+        </div>
+      </div>
+      <div class="col-lg-6 text-center d-none d-lg-block">
+        <div class="vp-hero-graphic">
+          <div class="vp-hero-main">🗳️</div>
+          <div class="vp-orb vp-orb-1">💻</div>
+          <div class="vp-orb vp-orb-2">📊</div>
+          <div class="vp-orb vp-orb-3">🏆</div>
+          <div class="vp-orb vp-orb-4">🔐</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Kategoriler -->
+{% if categories %}
+<section class="py-3 vp-cats-bar">
+  <div class="container">
+    <div class="d-flex gap-2 flex-wrap align-items-center">
+      <span class="text-muted small fw-bold me-1">KATEGORİ:</span>
+      {% for cat in categories %}
+      <a href="{% url 'surveys:survey_list' %}?kategori={{ cat.slug }}"
+         class="btn btn-sm btn-outline-secondary rounded-pill">
+        {{ cat.icon }} {{ cat.name }} <span class="badge bg-secondary">{{ cat.sc }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- Hazır Anketler -->
+<section class="py-5">
+  <div class="container">
+    <div class="vp-section-head mb-4">
+      <div>
+        <h2 class="fw-bold mb-0">📋 Hazır Bilişim Anketleri</h2>
+        <p class="text-muted small mb-0">Bilişim Sistemleri öğrencileri için özenle hazırlandı</p>
+      </div>
+      <a href="{% url 'surveys:survey_list' %}?tip=hazir" class="btn btn-outline-primary rounded-pill btn-sm">
+        Tümü <i class="bi bi-arrow-right"></i>
+      </a>
+    </div>
+    {% if hazir_surveys %}
+    <div class="row g-4">
+      {% for s in hazir_surveys %}
+      <div class="col-md-6 col-lg-4">{% include "surveys/_survey_card.html" with survey=s %}</div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="vp-empty"><div>📭</div><p class="text-muted">Henüz hazır anket yok.</p></div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- Özel Anketler -->
+<section class="py-5 bg-light">
+  <div class="container">
+    <div class="vp-section-head mb-4">
+      <div>
+        <h2 class="fw-bold mb-0">✏️ Kullanıcı Anketleri</h2>
+        <p class="text-muted small mb-0">Topluluk tarafından oluşturuldu</p>
+      </div>
+      <div class="d-flex gap-2">
+        {% if user.is_authenticated %}
+        <a href="{% url 'surveys:create_survey' %}" class="btn btn-warning rounded-pill btn-sm">
+          <i class="bi bi-plus-circle me-1"></i>Oluştur
+        </a>
+        {% endif %}
+        <a href="{% url 'surveys:survey_list' %}?tip=ozel" class="btn btn-outline-primary rounded-pill btn-sm">
+          Tümü <i class="bi bi-arrow-right"></i>
+        </a>
+      </div>
+    </div>
+    {% if ozel_surveys %}
+    <div class="row g-4">
+      {% for s in ozel_surveys %}
+      <div class="col-md-6 col-lg-4">{% include "surveys/_survey_card.html" with survey=s %}</div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="vp-empty">
+      <div>✏️</div>
+      <p class="text-muted">Henüz özel anket yok.</p>
+      {% if user.is_authenticated %}
+      <a href="{% url 'surveys:create_survey' %}" class="btn btn-warning rounded-pill">İlk Anketi Oluştur</a>
+      {% else %}
+      <a href="{% url 'login' %}" class="btn btn-primary rounded-pill">Giriş Yapıp Oluştur</a>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+{% endblock %}

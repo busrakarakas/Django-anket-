@@ -1,0 +1,25 @@
+{% extends "errors/base_error.html" %}
+
+{% block error_title %}Sayfa Bulunamadı{% endblock %}
+{% block code_gradient %}linear-gradient(135deg, #6366f1, #a78bfa){% endblock %}
+{% block divider_color %}linear-gradient(90deg, #6366f1, #a78bfa){% endblock %}
+{% block badge_bg %}rgba(99,102,241,0.2){% endblock %}
+{% block badge_border %}rgba(99,102,241,0.4){% endblock %}
+{% block badge_color %}#a78bfa{% endblock %}
+
+{% block error_icon %}🔍{% endblock %}
+{% block error_badge %}404 HATA{% endblock %}
+{% block error_code %}404{% endblock %}
+{% block error_heading %}Sayfa Bulunamadı!{% endblock %}
+{% block error_message %}
+    Aradığınız sayfa mevcut değil, taşınmış ya da silinmiş olabilir.<br>
+    Belki de URL'yi yanlış yazdınız?
+{% endblock %}
+{% block error_actions %}
+<a href="/" class="btn-glass btn-glass-primary">
+    <i class="bi bi-house"></i> Ana Sayfaya Dön
+</a>
+<a href="/anketler/" class="btn-glass btn-glass-outline">
+    <i class="bi bi-list-ul"></i> Anketlere Git
+</a>
+{% endblock %}
